@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>11.Kibana深入-Timelion画图实现系统监控 | 奥利奥の麦旋风</title><meta name="author" content="Chenlin"><meta name="copyright" content="Chenlin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[toc] 什么是Timelion？Timelion使你可以轻松获得以下问题的答案：  随着时间的推移，每个唯一的用户会查看多少个页面?  这个星期五和上周五之间的交通量有什么不同？  今天有多少日本人口来到我的网站？  标准普尔500指数的10日均线是多少？  过去两年收到的所有搜索请求的累计总和是多少？ 　　Timelion是Kibana时间序列的可视化工具。时间序列可视化是可视化的，以时间顺">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11.Kibana深入-Timelion画图实现系统监控">
+<meta property="og:url" content="https://chenlinbb.github.io/archives/3f8efe96.html">
+<meta property="og:site_name" content="奥利奥の麦旋风">
+<meta property="og:description" content="[toc] 什么是Timelion？Timelion使你可以轻松获得以下问题的答案：  随着时间的推移，每个唯一的用户会查看多少个页面?  这个星期五和上周五之间的交通量有什么不同？  今天有多少日本人口来到我的网站？  标准普尔500指数的10日均线是多少？  过去两年收到的所有搜索请求的累计总和是多少？ 　　Timelion是Kibana时间序列的可视化工具。时间序列可视化是可视化的，以时间顺">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg">
+<meta property="article:published_time" content="2024-07-17T15:51:58.147Z">
+<meta property="article:modified_time" content="2024-07-17T15:52:07.265Z">
+<meta property="article:author" content="Chenlin">
+<meta property="article:tag" content="自动化运维">
+<meta property="article:tag" content="ELK集群">
+<meta property="article:tag" content="日志收集">
+<meta property="article:tag" content="日志分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg"><link rel="shortcut icon" href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/mcdonald_burger_hamburger_cheeseburger_icon.png"><link rel="canonical" href="https://chenlinbb.github.io/archives/3f8efe96.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-XqEq5zqmT8"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":1000},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Chenlin","link":"链接: ","source":"来源: 奥利奥の麦旋风","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '11.Kibana深入-Timelion画图实现系统监控',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-17 23:52:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="奥利奥の麦旋风" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="奥利奥の麦旋风"><span class="site-name">奥利奥の麦旋风</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">11.Kibana深入-Timelion画图实现系统监控</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon fas fa-history"></i><span class="post-meta-label">更新于</span><time datetime="2024-07-17T15:52:07.265Z" title="更新于 2024-07-17 23:52:07">2024-07-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK%E9%9B%86%E7%BE%A4/">ELK集群</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>15分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="11.Kibana深入-Timelion画图实现系统监控"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>[toc]</p>
+<h1 id="什么是Timelion？"><a href="#什么是Timelion？" class="headerlink" title="什么是Timelion？"></a>什么是Timelion？</h1><p>Timelion使你可以轻松获得以下问题的答案：</p>
+<ol>
+<li><p>随着时间的推移，每个唯一的用户会查看多少个页面?</p>
+</li>
+<li><p>这个星期五和上周五之间的交通量有什么不同？</p>
+</li>
+<li><p>今天有多少日本人口来到我的网站？</p>
+</li>
+<li><p>标准普尔500指数的10日均线是多少？</p>
+</li>
+<li><p>过去两年收到的所有搜索请求的累计总和是多少？</p>
+<p>　　<code>Timelion</code>是Kibana时间序列的可视化工具。时间序列可视化是可视化的，以时间顺序分析数据。<code>Timelion</code>可用于绘制二维图形，时间绘制在x轴上。</p>
+<p>　　与使用简单的条形图或线条可视化相比有什么优势？<code>Timelion</code>采取不同的方法。使用<code>Timelion</code>特定语法，您通过将功能链接在一起来定义图形，而不是使用可视化编辑器创建图表。该语法启用了经典点系列图不提供的一些功能，如将不同索引或数据源的数据绘制到一个图形中。</p>
+</li>
+</ol>
+<p>但是在使用<code>Timelion</code>之前，我们需要下载并安装<code>Metricbeat</code></p>
+<h1 id="Metricbeat介绍及部署"><a href="#Metricbeat介绍及部署" class="headerlink" title="Metricbeat介绍及部署"></a>Metricbeat介绍及部署</h1><h2 id="Metricbeat介绍"><a href="#Metricbeat介绍" class="headerlink" title="Metricbeat介绍"></a>Metricbeat介绍</h2><p><code>Metricbeat</code>可以定期收集操作系统和服务器的运行指标（CPU，内存，硬盘，IO,读写速度，进程等等），<code>Metricbeat</code>可以将收集到的指标和数据发送到你指定的输出，比如：elasticsearch，logstash,redis等等，最终达成监视服务器的目标。</p>
+<h2 id="Metricbeat部署及配置"><a href="#Metricbeat部署及配置" class="headerlink" title="Metricbeat部署及配置"></a>Metricbeat部署及配置</h2><p>因为我们使用的ES和Kibana是5版本的，所以我们需要下载5版本的<code>Metricbeat</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># RPM包下载</span></span><br><span class="line">wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-5.3.3-x86_64.rpm</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 源码包下载</span></span><br><span class="line">wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-5.3.3-linux-x86_64.tar.gz</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 安装Metricbeat</span></span><br><span class="line">yum localinstall -y metricbeat-5.3.3-x86_64.rpm</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 修改配置文件</span></span><br><span class="line">vim /etc/metricbeat/metricbeat.yml</span><br><span class="line"><span class="comment">#==========================  Modules configuration ============================</span></span><br><span class="line">metricbeat.modules:</span><br><span class="line"> </span><br><span class="line"><span class="comment">#------------------------------- System Module -------------------------------</span></span><br><span class="line">- module: system</span><br><span class="line">  metricsets:</span><br><span class="line">    <span class="comment"># CPU stats</span></span><br><span class="line">    - cpu</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># System Load stats</span></span><br><span class="line">    - load</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Per CPU core stats</span></span><br><span class="line">    <span class="comment">#- core</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment"># IO stats</span></span><br><span class="line">    <span class="comment">#- diskio</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Per filesystem stats</span></span><br><span class="line">    - filesystem</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># File system summary stats</span></span><br><span class="line">    - fsstat</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Memory stats</span></span><br><span class="line">    - memory</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Network stats</span></span><br><span class="line">    - network</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Per process stats</span></span><br><span class="line">    - process</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Sockets (linux only)</span></span><br><span class="line">    <span class="comment">#- socket</span></span><br><span class="line">  enabled: <span class="literal">true</span></span><br><span class="line">  period: 1m</span><br><span class="line">  processes: [<span class="string">&#x27;.*&#x27;</span>]</span><br><span class="line"><span class="comment">#================================ Outputs =====================================</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># Configure what outputs to use when sending the data collected by the beat.</span></span><br><span class="line"><span class="comment"># Multiple outputs may be used.</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#-------------------------- Elasticsearch output ------------------------------</span></span><br><span class="line">output.elasticsearch:</span><br><span class="line">  <span class="comment"># Array of hosts to connect to.</span></span><br><span class="line">  hosts: [<span class="string">&quot;10.0.0.51:9200&quot;</span>]</span><br><span class="line"> </span><br><span class="line">  <span class="comment"># Optional protocol and basic auth credentials.</span></span><br><span class="line">  <span class="comment">#protocol: &quot;https&quot;</span></span><br><span class="line">  <span class="comment">#username: &quot;elastic&quot;</span></span><br><span class="line">  <span class="comment">#password: &quot;changeme&quot;</span></span><br><span class="line">  <span class="comment">#要加载仪表板，可以在metricbeat设置中启用仪表板加载。当仪表板加载被启用时，Metricbeat使用Kibana API来加载样本仪表板。只有当Metricbeat启动时，才会尝试仪表板加载。</span></span><br><span class="line">  <span class="comment"># 设置kibana服务地址</span></span><br><span class="line">  setup.kibana.host: <span class="string">&quot;10.0.0.54:5601&quot;</span></span><br><span class="line">  <span class="comment"># 加载默认的仪表盘样式</span></span><br><span class="line">  setup.dashboards.enabled: <span class="literal">true</span></span><br><span class="line">  <span class="comment"># 设置如果存在模板，则不覆盖原有模板</span></span><br><span class="line">  setup.template.overwrite: <span class="literal">false</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># 启动Metricbeat(CentOS6)</span></span><br><span class="line">/etc/init.d/metricbeat start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动Metricbeat(CentOS7)</span></span><br><span class="line">systemctl start metricbeat</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 检查metricbeat是否正常运行（返回索引对应内容）</span></span><br><span class="line">curl -XGET <span class="string">&#x27;http://10.0.0.51:9200/metricbeat-*/_search?pretty&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550340596673.jpg" alt="img"></p>
+<p>打开浏览器，访问：<a target="_blank" rel="noopener external nofollow noreferrer" href="http://10.0.0.51:9100/">http://10.0.0.51:9100/</a></p>
+<p>查看Metricbeat索引</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550342777983.jpg" alt="img"></p>
+<p>打开浏览器，访问：<a target="_blank" rel="noopener external nofollow noreferrer" href="http://10.0.0.54:5601/">http://10.0.0.54:5601/</a></p>
+<p>添加<code>metricbeat-*</code>索引</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550343419410.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550343837973.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550344211466.jpg" alt="img"></p>
+<p>创建后，即可在<code>Discover</code>中看到<code>Metricbeat</code>信息</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550344772506.jpg" alt="img"></p>
+<h1 id="Timelion使用Metricbeat"><a href="#Timelion使用Metricbeat" class="headerlink" title="Timelion使用Metricbeat"></a>Timelion使用Metricbeat</h1><h2 id="创建时间序列可视化"><a href="#创建时间序列可视化" class="headerlink" title="创建时间序列可视化"></a>创建时间序列可视化</h2><p>使用Metricbeat的时间序列数据带你浏览Timelion提供的一些函数。</p>
+<p>创建第一个可视化将比较在用户空间中花费的CPU时间与一小时的结果偏移量的实时百分比，为了创建这个可视化，我们需要创建两个Timelion表达式，一个是system.cpu.user.pct的实时平均数，另一个是1小时的平均偏移量。</p>
+<p>首先，需要在第一个表达式中定义<code>index</code>、<code>timefield</code>和<code>metric</code>，并在<code>Timelion</code>查询栏中输入以下表达式。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550356801404.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550357549139.jpg" alt="img"></p>
+<p>现在需要添加另一个具有前一小时数据的系列，以便进行比较，为此，你必须向.es()函数添加一个<code>offset</code>参数，<code>offset</code>将用日期表达式偏移序列检索。对于本例，你希望将数据偏移一小时，并使用日期表达式-1h，使用逗号分隔这两个系列，在Timelion查询栏中输入以下表达式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>), .es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>很难区分这两个系列，自定义标签以便于区分它们，你总是可以将.label()函数附加到任何表达式以添加自定义标签，在Timelion查询栏中输入以下表达式来定制标签：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;last hour&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;current hour&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550363220941.jpg" alt="img"></p>
+<p>保存完整的Timelion工作表作为Metricbeat示例，作为一种最佳实践，你应该在完成本教程的过程中保存对本工作表所做的任何重要更改。</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550365116479.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550365590002.jpg" alt="img"></p>
+<h2 id="定制和格式化可视化"><a href="#定制和格式化可视化" class="headerlink" title="定制和格式化可视化"></a>定制和格式化可视化</h2><p>Timelion有很多定制选项，你几乎可以使用可用的函数对图表的每个方面进行个性化设置，执行以下修改。</p>
+<ol>
+<li>添加一个标题</li>
+<li>更改系列类型</li>
+<li>改变一个系列的颜色和不透明度</li>
+<li>修改图例</li>
+</ol>
+<p>之前用两个系列创建了一个时间轴图表，让我们继续定制这个可视化。</p>
+<p>在进行任何其他修改之前，将<code>title()</code>函数附加到表达式的末尾，以添加具有有意义名称的标题，这将使不熟悉的用户更容易理解可视化目的。对于这个示例，将<code>title(&#39;CPU usage&#39;)</code>添加到原始系列中，在Timelion 查询栏中使用以下表达式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;last hour&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;current hour&#x27;</span>).title(<span class="string">&#x27;CPU usage&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550368468143.jpg" alt="img"></p>
+<p>为了进一步区分过去一小时系列，你将把图表类型更改为区域图表，为了做到这一点，你需要使用<code>.lines()</code>函数来定制折线图，你将设置fill和width参数，分别设置折线图的填充和折线宽度。在本例中，你将通过添加<code>.lines(fill=1,width=0.5)</code>将填充级别设置为1，边框宽度设置为0.5，在Timelion查询栏中使用以下表达式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;last hour&#x27;</span>).lines(fill=1,width=0.5), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;current hour&#x27;</span>).title(<span class="string">&#x27;CPU usage&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550370135956.jpg" alt="img"></p>
+<p>让我们给这些系列涂上颜色，使当前的小时系列比过去一个小时系列流行一点，<code>color()</code>函数可用于更改任何系列的颜色，并接受标准颜色名称、十六进制值或分组系列的颜色模式。对于这个示例，你将在过去一个小时使用<code>.color(gray)</code>，而在当前小时使用<code>.color(#1E90FF)</code>，在Timelion查询栏中输入以下表达式进行调整：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;last hour&#x27;</span>).lines(fill=1,width=0.5).color(gray), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;current hour&#x27;</span>).title(<span class="string">&#x27;CPU usage&#x27;</span>).color(<span class="comment">#1E90FF)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550371280126.jpg" alt="img"></p>
+<p>最后但并非最不重要，调整图例，使其占用尽可能小的空间，你可以使用<code>.legend()</code>函数来设置图例的位置和样式。在本例中，通过将<code>.legend(columns=2, position=nw)</code>两列追加到原始系列，将图例放置在可视化的西北位置，使用以下表达式进行调整：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(offset=-1h,index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;last hour&#x27;</span>).lines(fill=1,width=0.5).color(gray), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;avg:system.cpu.user.pct&#x27;</span>).label(<span class="string">&#x27;current hour&#x27;</span>).title(<span class="string">&#x27;CPU usage&#x27;</span>).color(<span class="comment">#1E90FF).legend(columns=2, position=nw)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550372677660.jpg" alt="img"></p>
+<p>保存下来，再创建一个新的。</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550373823177.jpg" alt="img"></p>
+<h2 id="使用数学函数"><a href="#使用数学函数" class="headerlink" title="使用数学函数"></a>使用数学函数</h2><p>在前两部分中，已经学习了如何创建和样式化Timelion可视化，本节将探索Timelion提供的数学函数。你将继续使用Metricbeat数据为入站和出站网络流量创建新的Timelion可视化，首先，需要在工作表中添加一个新的Timelion可视化。</p>
+<p>在顶部菜单中，单击<code>Add</code>添加第二个可视化，当添加到工作表中时，你会注意到查询栏已经被替换为默认的<code>.es(*)</code>表达式，这是因为查询与你选择的Timelion工作表上的可视化相关联。</p>
+<p>开始跟踪入站/出站网络流量，你的第一个表达式将计算<code>system.network.in.bytes</code>的最大值，将下面的表达式输入到你的Timelion查询栏：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat*, timefield=@timestamp, metric=max:system.network.in.bytes)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550375485103.jpg" alt="img"></p>
+<p>在绘制变化率时，监视网络流量更有价值，<code>derivative()</code>函数就是这样做的 - 绘制值随时间的变化，通过在表达式末尾添加<code>.derivative()</code>可以很容易地做到这一点，使用以下表达式来更新你的可视化：</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550376413219.jpg" alt="img"></p>
+<p>现在是出站流量，你需要为<code>system.network.out.bytes</code>添加类似的计算，由于出站流量将离开你的机器，因此将此指标表示为负数是有意义的，<code>.multiply()</code>函数将系列乘以一个数字，这个数字是系列或系列列表的结果。对于本例，你将使用<code>.multiply(-1)</code>将出站网络流量转换为负值，使用以下表达式来更新你的可视化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat*, timefield=@timestamp, metric=max:system.network.in.bytes).derivative(), .es(index=metricbeat*, timefield=@timestamp, metric=max:system.network.out.bytes).derivative().multiply(-1)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550378088167.jpg" alt="img"></p>
+<p>为了使这个可视化更容易使用，将这个系列从字节转换为兆字节，Timelion有一个<code>.divide()</code>函数可以使用，<code>.divide()</code>接受与<code>.multiply()</code>相同的输入，并将这个系列除以所定义的除数，使用以下表达式来更新你的可视化：</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550379584394.jpg" alt="img"></p>
+<p>使用上一节中学习的格式化函数<code>.title()</code>、<code>.label()</code>、<code>.color()</code>、<code>.lines()</code>和<code>.legend()</code>，让我们稍微整理一下这个可视化，使用以下表达式来更新你的可视化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat*, timefield=@timestamp, metric=max:system.network.in.bytes).derivative().divide(1048576).lines(fill=2, width=1).color(green).label(<span class="string">&quot;Inbound traffic&quot;</span>).title(<span class="string">&quot;Network traffic (MB/s)&quot;</span>), .es(index=metricbeat*, timefield=@timestamp, metric=max:system.network.out.bytes).derivative().multiply(-1).divide(1048576).lines(fill=2, width=1).color(blue).label(<span class="string">&quot;Outbound traffic&quot;</span>).legend(columns=2, position=nw)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550382566489.jpg" alt="img"></p>
+<p>保存，开启新的，画图</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550384035249.jpg" alt="img"></p>
+<h2 id="使用条件逻辑和跟踪趋势"><a href="#使用条件逻辑和跟踪趋势" class="headerlink" title="使用条件逻辑和跟踪趋势"></a>使用条件逻辑和跟踪趋势</h2><p>在本节中，你将学习如何使用条件逻辑修改时间序列数据，并使用移动平均值创建趋势，这有助于随着时间的推移很容易地发现异常值和模式。</p>
+<p>对于本教程，你将继续使用Metricbeat数据添加另一个监控内存消耗的可视化，首先，使用以下表达式绘制<code>system.memory.actual.used.bytes</code>的最大值。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550385197269.jpg" alt="img"></p>
+<p>让我们创建两个阈值来监视使用的内存数量，在本教程中，警告阈值为234MB，严重阈值为235MB，当使用内存的最大数量超过这些阈值中的任何一个时，将相应地对该系列进行着色。</p>
+<p>如果你的计算机的阈值过高或过低，请相应地进行调整。</p>
+<p>要配置这两个阈值，可以使用Timelion的条件逻辑，在本教程中，你将使用if()将每个点与一个数字进行比较，如果条件的值为true，则调整样式，如果条件的值为false，则使用默认样式，Timelion提供了以下六个操作符值进行比较。</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>eq</td>
+<td>相等</td>
+</tr>
+<tr>
+<td>ne</td>
+<td>不相等</td>
+</tr>
+<tr>
+<td>lt</td>
+<td>小于</td>
+</tr>
+<tr>
+<td>gt</td>
+<td>大于</td>
+</tr>
+<tr>
+<td>lte</td>
+<td>小于等于</td>
+</tr>
+<tr>
+<td>get</td>
+<td>大于等于</td>
+</tr>
+</tbody></table>
+<p>由于有两个阈值，因此对它们进行不同的样式是有意义的，使用gt操作符将警告阈值用<code>.color(&#39;#FFCC11&#39;)</code>涂成黄色，将严重阈值用<code>.color(&#39;red&#39;)</code>涂成红色，在Timelion查询栏中输入以下表达式，以应用条件逻辑和阈值样式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,234000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;warning&#x27;</span>).color(<span class="string">&#x27;#FFCC11&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,235000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;serious&#x27;</span>).color(<span class="string">&#x27;red&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550396434205.jpg" alt="img"></p>
+<p>现在你已经定义了阈值来轻松地识别异常值，让我们创建一个新的系列来确定真正的趋势是什么，Timelion的<code>mvavg()</code>函数允许计算给定窗口上的移动平均值，这对嘈杂的时间序列特别有用，对于本教程，你将使用<code>.mvavg(10)</code>来创建具有10个数据点窗口的移动平均线，使用以下表达式创建最大内存使用量的移动平均值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,234000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;warning&#x27;</span>).color(<span class="string">&#x27;#FFCC11&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,235000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;serious&#x27;</span>).color(<span class="string">&#x27;red&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).mvavg(10)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550398221958.jpg" alt="img">现在你已经有了阈值和移动平均值，让我们格式化可视化，以便更容易使用，和最后一部分一样，使用<code>.color()</code>、<code>.line()</code>、<code>.title()</code>和<code>.legend()</code>函数相应地更新可视化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).label(<span class="string">&#x27;max memory&#x27;</span>).title(<span class="string">&#x27;Memory consumption over time&#x27;</span>), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,234000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;warning&#x27;</span>).color(<span class="string">&#x27;#FFCC11&#x27;</span>).lines(width=5), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).<span class="keyword">if</span>(gt,235000000,.es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>),null).label(<span class="string">&#x27;serious&#x27;</span>).color(<span class="string">&#x27;red&#x27;</span>).lines(width=5), .es(index=metricbeat-*, timefield=<span class="string">&#x27;@timestamp&#x27;</span>, metric=<span class="string">&#x27;max:system.memory.actual.used.bytes&#x27;</span>).mvavg(10).label(<span class="string">&#x27;mvavg&#x27;</span>).lines(width=2).color(<span class="comment">#5E5E5E).legend(columns=4, position=nw)</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550403825820.jpg" alt="img"></p>
+<p>保存</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550404974057.jpg" alt="img"></p>
+<h2 id="展示至Dashboard"><a href="#展示至Dashboard" class="headerlink" title="展示至Dashboard"></a>展示至Dashboard</h2><p>整合，其实最终我们需要的是，网络，cpu，内存优化后的图</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550405596430.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550407410195.jpg" alt="img"></p>
+<p>你已经正式利用了Timelion的功能来创建时间序列可视化，本教程的最后一步是向仪表盘添加你新的可视化，下面，本节将向你展示如何从Timelion工作表中保存可视化，并将其添加到现有的仪表盘中。</p>
+<p>要将Timelion可视化保存为仪表盘面板，请执行以下步骤。</p>
+<ol>
+<li>选择要添加到一个（或多个）仪表盘上的可视化视图。</li>
+<li>点击顶部菜单中的<code>Save</code>选项。</li>
+<li>选择<code>Save current expression as Kibana dashboard panel</code>。</li>
+<li>命名你的面板并点击<code>Save</code>以作为仪表盘可视化。</li>
+</ol>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550407700962.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550410744572.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550411342535.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550411647010.jpg" alt="img"></p>
+<p>现在你可以将这个仪表盘面板添加到任何你想要的仪表盘上，这个可视化现在将在可视化列表中列出，继续并按照你创建的其他可视化效果的相同过程进行操作。</p>
+<p>创建一个新的仪表盘或打开一个现有的仪表盘，以添加Timelion可视化，就像其他任何可视化一样。</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550412004844.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550412201620.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550413097385.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550413635418.jpg" alt="img"></p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550413929541.jpg" alt="img"></p>
+<p>最终展示</p>
+<p><img src="https://blog.driverzeng.com/wp-content/uploads/2019/04/15550414351552.jpg" alt="img"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ChenlinBB.github.io">Chenlin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://chenlinbb.github.io/archives/3f8efe96.html">https://chenlinbb.github.io/archives/3f8efe96.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ChenlinBB.github.io" target="_blank">奥利奥の麦旋风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/">自动化运维</a><a class="post-meta__tags" href="/tags/ELK%E9%9B%86%E7%BE%A4/">ELK集群</a><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86/">日志收集</a><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/">日志分析</a></div><div class="post_share"><div class="social-share" data-image="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/e222a822.html" title="10.Kibana深入-使用地图统计客户端IP"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">10.Kibana深入-使用地图统计客户端IP</div></div></a></div><div class="next-post pull-right"><a href="/archives/2abd6686.html" title="12.Kibana深入-Dev Tools及Lucene语法"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">12.Kibana深入-Dev Tools及Lucene语法</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/archives/99013f2e.html" title="1.ELKstack介绍"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">1.ELKstack介绍</div></div></a></div><div><a href="/archives/2abd6686.html" title="12.Kibana深入-Dev Tools及Lucene语法"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">12.Kibana深入-Dev Tools及Lucene语法</div></div></a></div><div><a href="/archives/e222a822.html" title="10.Kibana深入-使用地图统计客户端IP"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">10.Kibana深入-使用地图统计客户端IP</div></div></a></div><div><a href="/archives/e46e7dd.html" title="2.Elasticsearch部署"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">2.Elasticsearch部署</div></div></a></div><div><a href="/archives/c466b2be.html" title="5.Kibana安装,索引添加及界面功能"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">5.Kibana安装,索引添加及界面功能</div></div></a></div><div><a href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">7.Logstash结合Redis搭建集群</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Chenlin</div><div class="author-info__description">青山不改，绿水长流</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><a id="card-info-btn" href="/img/WeChat.jpg"><i></i><span>联系站长</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:chenlin.h@foxmail.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/WeChat.JPG" target="_blank" title="WeChat"><i class="fab fa-weixin" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/QQ.jpg" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎大家一起学习交流，如遇到想学习的内容或发现文章错误请点击上方"联系站长"告知更新，谢谢！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFTimelion%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">什么是Timelion？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Metricbeat%E4%BB%8B%E7%BB%8D%E5%8F%8A%E9%83%A8%E7%BD%B2"><span class="toc-number">2.</span> <span class="toc-text">Metricbeat介绍及部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Metricbeat%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.1.</span> <span class="toc-text">Metricbeat介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Metricbeat%E9%83%A8%E7%BD%B2%E5%8F%8A%E9%85%8D%E7%BD%AE"><span class="toc-number">2.2.</span> <span class="toc-text">Metricbeat部署及配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Timelion%E4%BD%BF%E7%94%A8Metricbeat"><span class="toc-number">3.</span> <span class="toc-text">Timelion使用Metricbeat</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">3.1.</span> <span class="toc-text">创建时间序列可视化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E5%88%B6%E5%92%8C%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">3.2.</span> <span class="toc-text">定制和格式化可视化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%95%B0%E5%AD%A6%E5%87%BD%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">使用数学函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%9D%A1%E4%BB%B6%E9%80%BB%E8%BE%91%E5%92%8C%E8%B7%9F%E8%B8%AA%E8%B6%8B%E5%8A%BF"><span class="toc-number">3.4.</span> <span class="toc-text">使用条件逻辑和跟踪趋势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%95%E7%A4%BA%E8%87%B3Dashboard"><span class="toc-number">3.5.</span> <span class="toc-text">展示至Dashboard</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/31b0d93.html" title="1.Shell编程-基础"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1.Shell编程-基础"/></a><div class="content"><a class="title" href="/archives/31b0d93.html" title="1.Shell编程-基础">1.Shell编程-基础</a><time datetime="2024-07-17T15:58:40.340Z" title="发表于 2024-07-17 23:58:40">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="9.Kibana深入-日志图形展示"/></a><div class="content"><a class="title" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示">9.Kibana深入-日志图形展示</a><time datetime="2024-07-17T15:51:58.162Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/550b6709.html" title="8.Filebeat深入收集日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="8.Filebeat深入收集日志"/></a><div class="content"><a class="title" href="/archives/550b6709.html" title="8.Filebeat深入收集日志">8.Filebeat深入收集日志</a><time datetime="2024-07-17T15:51:58.160Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="7.Logstash结合Redis搭建集群"/></a><div class="content"><a class="title" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群">7.Logstash结合Redis搭建集群</a><time datetime="2024-07-17T15:51:58.159Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="6.Logstash深入收集多类型日志"/></a><div class="content"><a class="title" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志">6.Logstash深入收集多类型日志</a><time datetime="2024-07-17T15:51:58.158Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2024 By Chenlin</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="30" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body></html>

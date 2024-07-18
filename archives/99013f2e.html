@@ -1,0 +1,290 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>1.ELKstack介绍 | 奥利奥の麦旋风</title><meta name="author" content="Chenlin"><meta name="copyright" content="Chenlin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[toc] ELKstack大纲 ELKstack简介什么是ELK？通俗来讲，ELK是由Elasticsearch、Logstash、Kibana 三个开源软件的组成的一个组合体，这三个软件当中，每个软件用于完成不同的功能，ELK 又称为ELK stack，官方域名为elastic.co，ELK stack的主要优点有如下几个：  处理方式灵活： elasticsearch是实时全文索引，具有强大">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1.ELKstack介绍">
+<meta property="og:url" content="https://chenlinbb.github.io/archives/99013f2e.html">
+<meta property="og:site_name" content="奥利奥の麦旋风">
+<meta property="og:description" content="[toc] ELKstack大纲 ELKstack简介什么是ELK？通俗来讲，ELK是由Elasticsearch、Logstash、Kibana 三个开源软件的组成的一个组合体，这三个软件当中，每个软件用于完成不同的功能，ELK 又称为ELK stack，官方域名为elastic.co，ELK stack的主要优点有如下几个：  处理方式灵活： elasticsearch是实时全文索引，具有强大">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg">
+<meta property="article:published_time" content="2024-07-17T15:51:58.144Z">
+<meta property="article:modified_time" content="2024-07-17T15:52:07.260Z">
+<meta property="article:author" content="Chenlin">
+<meta property="article:tag" content="自动化运维">
+<meta property="article:tag" content="ELK集群">
+<meta property="article:tag" content="日志收集">
+<meta property="article:tag" content="日志分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg"><link rel="shortcut icon" href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/mcdonald_burger_hamburger_cheeseburger_icon.png"><link rel="canonical" href="https://chenlinbb.github.io/archives/99013f2e.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-XqEq5zqmT8"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":1000},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Chenlin","link":"链接: ","source":"来源: 奥利奥の麦旋风","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '1.ELKstack介绍',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-17 23:52:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="奥利奥の麦旋风" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="奥利奥の麦旋风"><span class="site-name">奥利奥の麦旋风</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">1.ELKstack介绍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon fas fa-history"></i><span class="post-meta-label">更新于</span><time datetime="2024-07-17T15:52:07.260Z" title="更新于 2024-07-17 23:52:07">2024-07-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK%E9%9B%86%E7%BE%A4/">ELK集群</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="1.ELKstack介绍"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>[toc]</p>
+<h1 id="ELKstack大纲"><a href="#ELKstack大纲" class="headerlink" title="ELKstack大纲"></a>ELKstack大纲</h1><p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/%E8%80%81%E7%94%B7%E5%AD%A9%E6%95%99%E8%82%B2ELK%E8%AF%BE%E7%A8%8B%E5%A4%A7%E7%BA%B2.jpg" alt="老男孩教育ELK课程大纲"></p>
+<h1 id="ELKstack简介"><a href="#ELKstack简介" class="headerlink" title="ELKstack简介"></a>ELKstack简介</h1><h2 id="什么是ELK？"><a href="#什么是ELK？" class="headerlink" title="什么是ELK？"></a>什么是ELK？</h2><p>通俗来讲，ELK是由Elasticsearch、Logstash、Kibana 三个开源软件的组成的一个组合体，这三个软件当中，每个软件用于完成不同的功能，ELK 又称为ELK stack，官方域名为elastic.co，ELK stack的主要优点有如下几个：</p>
+<ol>
+<li>处理方式灵活： elasticsearch是实时全文索引，具有强大的搜索功能</li>
+<li>配置相对简单：elasticsearch全部使用JSON 接口，logstash使用模块配置，kibana的配置文件部分更简单。 </li>
+<li>检索性能高效：基于优秀的设计，虽然每次查询都是实时，但是也可以达到百亿级数据的查询秒级响应。</li>
+<li>集群线性扩展：elasticsearch和logstash都可以灵活线性扩展</li>
+<li>前端操作绚丽：kibana的前端设计比较绚丽，而且操作简单</li>
+</ol>
+<p><strong>elk在5版本之前，可以用redis，6.7版本之后使用卡夫卡，不用redis</strong></p>
+<h2 id="什么是Elasticsearch？"><a href="#什么是Elasticsearch？" class="headerlink" title="什么是Elasticsearch？"></a>什么是Elasticsearch？</h2><p>是一个高度可扩展的开源全文搜索和分析引擎，它可实现数据的实时全文搜索搜索、支持分布式可实现高可用、提供API接口，可以处理大规模日志数据，比如Nginx、Tomcat、系统日志等功能。</p>
+<ul>
+<li>主要功能：<ul>
+<li>是个数据库，数据放在里面可以快速搜索、存储日志</li>
+<li>数据库L是一个高度可拓展的开源实现全文搜索和分析引擎</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/15513262928638.jpg" alt="15513262928638"></p>
+<h2 id="什么是Logstash？"><a href="#什么是Logstash？" class="headerlink" title="什么是Logstash？"></a>什么是Logstash？</h2><p>可以通过插件实现日志收集和转发，支持日志过滤，支持普通log、自定义json格式的日志解析。</p>
+<p>filebeat由于轻量化的特性，通常用于代替logstash跑腿收集各个服务器的日志，统一放到redis里，也可以取出放到elasticsearch中</p>
+<ul>
+<li><p>主要功能：</p>
+<ul>
+<li>收集日志，转发日志</li>
+<li>可以通过插件实现日志的收集和转发，实现日志过滤 支持普通log</li>
+</ul>
+</li>
+<li><p>filebeat：</p>
+<ul>
+<li>是一个轻量级的日志收集工具；</li>
+</ul>
+</li>
+<li><p>logstash：</p>
+<ul>
+<li>是一个重量级日志收集工具，可以做分析、使用正则表达式、分析用户IP、画地图、查看用户分布情况等功能</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/15513263629058.jpg" alt="15513263629058"></p>
+<h2 id="什么是Kibana？"><a href="#什么是Kibana？" class="headerlink" title="什么是Kibana？"></a>什么是Kibana？</h2><p>主要是通过接口调用elasticsearch的数据，并进行前端数据可视化的展现。</p>
+<ul>
+<li>主要功能：<ul>
+<li>通过接口调用Elasticsearch的数据，并进行数据的可视化的展示，web图形化日志展示</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/15513264558748.jpg" alt="15513264558748"></p>
+<h1 id="ELKstack集群工作流程"><a href="#ELKstack集群工作流程" class="headerlink" title="ELKstack集群工作流程"></a>ELKstack集群工作流程</h1><p>elasticsearch 是一个数据库，logstash可以理解为是一个中介，让filebeat跑腿收集各个服务器的日志放到reids里，再通过logstash把日志拿出来放到ES里。</p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230427200459677.png" alt="image-20230427200459677"></p>
+<h1 id="Redis和Kafka的区别"><a href="#Redis和Kafka的区别" class="headerlink" title="Redis和Kafka的区别"></a>Redis和Kafka的区别</h1><p>Redis和Kafka是两种<strong>不同类型</strong>的<strong>数据处理</strong>和<strong>消息传递</strong>系统，它们有以下几点区别：</p>
+<h2 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h2><ul>
+<li>Redis<ul>
+<li>基于内存的数据存储系统，它提供了多种数据结构，如字符串、哈希表、列表、集合和有序集合等。</li>
+<li>Redis允许对这些数据结构进行快速读写操作，并提供了丰富的数据操作命令。</li>
+</ul>
+</li>
+<li>Kafka<ul>
+<li>分布式消息队列系统，它以高吞吐量、可持久化、可靠性传递的方式处理消息。</li>
+<li>Kafka将消息以类似于日志的方式进行持久化存储，并通过分区和复制机制实现高可靠性的消息传递。</li>
+</ul>
+</li>
+</ul>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li>Redis<ul>
+<li>适用于缓存、会话存储、发布/订阅系统、实时数据分析和计数器等场景。</li>
+<li>它以其快速的读写能力和丰富的数据结构，为高性能的数据访问和处理提供了支持。</li>
+</ul>
+</li>
+<li>Kafka<ul>
+<li>适用于构建实时流处理、事件驱动架构、日志收集和分发、数据管道等场景。</li>
+<li>它提供了可持久化的消息传递机制，并支持分布式、可水平扩展的消息处理。</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据处理模式"><a href="#数据处理模式" class="headerlink" title="数据处理模式"></a>数据处理模式</h2><ul>
+<li>Redis<ul>
+<li>是一个直接对数据进行操作的系统，它支持读写操作和丰富的数据处理命令。</li>
+<li>数据通常以键值对的形式存储在内存中，可以快速地进行读写和操作。</li>
+</ul>
+</li>
+<li>Kafka<ul>
+<li>是基于发布/订阅模式的消息队列系统，它将消息发布到主题(Topic)，然后订阅者(Consumer)可以从主题中消费消息。</li>
+<li>Kafka以分区和偏移量的方式存储和组织消息，保证了消息的有序性和可靠性。</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据持久化"><a href="#数据持久化" class="headerlink" title="数据持久化"></a>数据持久化</h2><ul>
+<li>Redis<ul>
+<li>支持将数据持久化到磁盘上，以防止数据丢失。它提供了两种持久化机制：RDB(Redis Database)快照和AOF(Append-Only File)日志。</li>
+<li>RDB可以定期将数据集的快照保存到磁盘，而AOF则记录每个写操作，以便在重启时重新执行这些操作。</li>
+</ul>
+</li>
+<li>Kafka<ul>
+<li>通过持久化存储日志文件来保证消息的可靠性。消息被写入磁盘，并根据配置的保留策略进行管理。消费者可以根据自己的需求从特定的偏移量读取消息，并且Kafka可以保留指定时间段内的消息。</li>
+</ul>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ChenlinBB.github.io">Chenlin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://chenlinbb.github.io/archives/99013f2e.html">https://chenlinbb.github.io/archives/99013f2e.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ChenlinBB.github.io" target="_blank">奥利奥の麦旋风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/">自动化运维</a><a class="post-meta__tags" href="/tags/ELK%E9%9B%86%E7%BE%A4/">ELK集群</a><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86/">日志收集</a><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/">日志分析</a></div><div class="post_share"><div class="social-share" data-image="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/b58bb029.html" title="8.Zabbix监控系统：分布式监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">8.Zabbix监控系统：分布式监控</div></div></a></div><div class="next-post pull-right"><a href="/archives/e222a822.html" title="10.Kibana深入-使用地图统计客户端IP"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">10.Kibana深入-使用地图统计客户端IP</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/archives/2abd6686.html" title="12.Kibana深入-Dev Tools及Lucene语法"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">12.Kibana深入-Dev Tools及Lucene语法</div></div></a></div><div><a href="/archives/e222a822.html" title="10.Kibana深入-使用地图统计客户端IP"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">10.Kibana深入-使用地图统计客户端IP</div></div></a></div><div><a href="/archives/e46e7dd.html" title="2.Elasticsearch部署"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">2.Elasticsearch部署</div></div></a></div><div><a href="/archives/3f8efe96.html" title="11.Kibana深入-Timelion画图实现系统监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">11.Kibana深入-Timelion画图实现系统监控</div></div></a></div><div><a href="/archives/c466b2be.html" title="5.Kibana安装,索引添加及界面功能"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">5.Kibana安装,索引添加及界面功能</div></div></a></div><div><a href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-17</div><div class="title">7.Logstash结合Redis搭建集群</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Chenlin</div><div class="author-info__description">青山不改，绿水长流</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><a id="card-info-btn" href="/img/WeChat.jpg"><i></i><span>联系站长</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:chenlin.h@foxmail.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/WeChat.JPG" target="_blank" title="WeChat"><i class="fab fa-weixin" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/QQ.jpg" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎大家一起学习交流，如遇到想学习的内容或发现文章错误请点击上方"联系站长"告知更新，谢谢！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ELKstack%E5%A4%A7%E7%BA%B2"><span class="toc-number">1.</span> <span class="toc-text">ELKstack大纲</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ELKstack%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">ELKstack简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFELK%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">什么是ELK？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFElasticsearch%EF%BC%9F"><span class="toc-number">2.2.</span> <span class="toc-text">什么是Elasticsearch？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFLogstash%EF%BC%9F"><span class="toc-number">2.3.</span> <span class="toc-text">什么是Logstash？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFKibana%EF%BC%9F"><span class="toc-number">2.4.</span> <span class="toc-text">什么是Kibana？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ELKstack%E9%9B%86%E7%BE%A4%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">ELKstack集群工作流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Redis%E5%92%8CKafka%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.</span> <span class="toc-text">Redis和Kafka的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.1.</span> <span class="toc-text">数据模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">4.2.</span> <span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.3.</span> <span class="toc-text">数据处理模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">4.4.</span> <span class="toc-text">数据持久化</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/31b0d93.html" title="1.Shell编程-基础"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1.Shell编程-基础"/></a><div class="content"><a class="title" href="/archives/31b0d93.html" title="1.Shell编程-基础">1.Shell编程-基础</a><time datetime="2024-07-17T15:58:40.340Z" title="发表于 2024-07-17 23:58:40">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="9.Kibana深入-日志图形展示"/></a><div class="content"><a class="title" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示">9.Kibana深入-日志图形展示</a><time datetime="2024-07-17T15:51:58.162Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/550b6709.html" title="8.Filebeat深入收集日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="8.Filebeat深入收集日志"/></a><div class="content"><a class="title" href="/archives/550b6709.html" title="8.Filebeat深入收集日志">8.Filebeat深入收集日志</a><time datetime="2024-07-17T15:51:58.160Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="7.Logstash结合Redis搭建集群"/></a><div class="content"><a class="title" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群">7.Logstash结合Redis搭建集群</a><time datetime="2024-07-17T15:51:58.159Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="6.Logstash深入收集多类型日志"/></a><div class="content"><a class="title" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志">6.Logstash深入收集多类型日志</a><time datetime="2024-07-17T15:51:58.158Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2024 By Chenlin</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="30" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body></html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>5.Zabbix自愈模式、报警升级和自定义图形 | 奥利奥の麦旋风</title><meta name="author" content="Chenlin"><meta name="copyright" content="Chenlin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[toc] Zabbix自愈模式有些时候，我们的服务宕机了，或者有些服务停掉了，那么我们可以先尝试让他启动，看是否能起的来，为了不影响用户的体验，先把服务起起来，然后再去排查，是什么原因故障的。那么此时我们就需要用到zabbix的自愈模式，这个…叫起来很好听，说白了，就是在让zabbix-server通过远程执行命令的方式，在agent上执行命令，启动服务。 步骤流程指示图       sudo提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5.Zabbix自愈模式、报警升级和自定义图形">
+<meta property="og:url" content="https://chenlinbb.github.io/archives/6e4f08aa.html">
+<meta property="og:site_name" content="奥利奥の麦旋风">
+<meta property="og:description" content="[toc] Zabbix自愈模式有些时候，我们的服务宕机了，或者有些服务停掉了，那么我们可以先尝试让他启动，看是否能起的来，为了不影响用户的体验，先把服务起起来，然后再去排查，是什么原因故障的。那么此时我们就需要用到zabbix的自愈模式，这个…叫起来很好听，说白了，就是在让zabbix-server通过远程执行命令的方式，在agent上执行命令，启动服务。 步骤流程指示图       sudo提">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg">
+<meta property="article:published_time" content="2024-07-17T14:15:13.386Z">
+<meta property="article:modified_time" content="2024-07-18T12:43:52.722Z">
+<meta property="article:author" content="Chenlin">
+<meta property="article:tag" content="自动化运维">
+<meta property="article:tag" content="应用监控">
+<meta property="article:tag" content="数据分析">
+<meta property="article:tag" content="Zabbix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg"><link rel="shortcut icon" href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/mcdonald_burger_hamburger_cheeseburger_icon.png"><link rel="canonical" href="https://chenlinbb.github.io/archives/6e4f08aa.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="codeva-XqEq5zqmT8"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":1000},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Chenlin","link":"链接: ","source":"来源: 奥利奥の麦旋风","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '5.Zabbix自愈模式、报警升级和自定义图形',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-18 20:43:52'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="奥利奥の麦旋风" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="奥利奥の麦旋风"><span class="site-name">奥利奥の麦旋风</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 引导</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-linux"></i><span> Linux基础</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%88%9D%E8%AF%86Linux/"><span> 初识Linux</span></a></li><li><a class="site-page child" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><span> 环境搭建</span></a></li><li><a class="site-page child" href="/categories/Nginx/"><span> Nginx</span></a></li><li><a class="site-page child" href="/categories/NetWork/"><span> NetWork</span></a></li><li><a class="site-page child" href="/categories/%E6%9E%B6%E6%9E%84%E5%B7%A5%E5%85%B7/"><span> 架构工具</span></a></li><li><a class="site-page child" href="/categories/%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B/"><span> 操作示例</span></a></li><li><a class="site-page child" href="/categories/%E5%91%BD%E4%BB%A4%E5%90%88%E9%9B%86/"><span> 命令合集</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-docker"></i><span> 容器化</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Docker/"><span> Docker</span></a></li><li><a class="site-page child" href="/categories/Kubernetes/"><span> Kubernetes</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-heart-pulse"></i><span> 应用监控</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Zabbix/"><span> Zabbix</span></a></li><li><a class="site-page child" href="/categories/Prometheus/"><span> Prometheus</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fab fa-jenkins"></i><span> DevOps</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/DevOps%E7%90%86%E5%BF%B5/"><span> DevOps理念</span></a></li><li><a class="site-page child" href="/categories/Git/"><span> Git</span></a></li><li><a class="site-page child" href="/categories/Jenkins/"><span> Jenkins</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-database"></i><span> 数据库</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/MySQL/"><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/Redis/"><span> Redis</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-code"></i><span> 高效运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/Ansible/"><span> Ansible</span></a></li><li><a class="site-page child" href="/categories/ELK%E9%9B%86%E7%BE%A4/"><span> ELK集群</span></a></li><li><a class="site-page child" href="/categories/Shell%E7%BC%96%E7%A8%8B/"><span> Shell编程</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">5.Zabbix自愈模式、报警升级和自定义图形</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon fas fa-history"></i><span class="post-meta-label">更新于</span><time datetime="2024-07-18T12:43:52.722Z" title="更新于 2024-07-18 20:43:52">2024-07-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Zabbix/">Zabbix</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="5.Zabbix自愈模式、报警升级和自定义图形"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>[toc]</p>
+<h1 id="Zabbix自愈模式"><a href="#Zabbix自愈模式" class="headerlink" title="Zabbix自愈模式"></a>Zabbix自愈模式</h1><p>有些时候，我们的服务宕机了，或者有些服务停掉了，那么我们可以先尝试让他启动，看是否能起的来，为了不影响用户的体验，先把服务起起来，然后再去排查，是什么原因故障的。<br>那么此时我们就需要用到zabbix的自愈模式，这个…叫起来很好听，说白了，就是在让zabbix-server通过远程执行命令的方式，在agent上执行命令，启动服务。</p>
+<h2 id="步骤流程指示图"><a href="#步骤流程指示图" class="headerlink" title="步骤流程指示图"></a>步骤流程指示图</h2><p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101035783.png" alt="image-20230324101035783"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101040373.png" alt="image-20230324101040373"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101043558.png" alt="image-20230324101043558"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101058725.png" alt="image-20230324101058725"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101106655.png" alt="image-20230324101106655"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101112186.png" alt="image-20230324101112186"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101115213.png" alt="image-20230324101115213"></p>
+<h2 id="sudo提权配置"><a href="#sudo提权配置" class="headerlink" title="sudo提权配置"></a>sudo提权配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">因为远程执行命令需要通过zabbix用户来执行，因为启动zabbix-server的用户是zabbix，所以我们必须给</span><br><span class="line">zabbix添加sudo权限，否则无法执行，并且要无密码。</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加sudo权限</span></span><br><span class="line">visudo</span><br><span class="line">%zabbix ALL=(ALL) NOPASSWD:ALL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试启动服务</span></span><br><span class="line">usermod zabbix -s /bin/bash</span><br><span class="line">su - zabbix</span><br><span class="line">-bash-4.2$ sudo systemctl start sshd</span><br></pre></td></tr></table></figure>
+
+<h2 id="zabbix开启远程执行命令"><a href="#zabbix开启远程执行命令" class="headerlink" title="zabbix开启远程执行命令"></a>zabbix开启远程执行命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改配置文件</span></span><br><span class="line">vim /etc/zabbix/zabbix_agentd.conf</span><br><span class="line">EnableRemoteCommands=1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启zabbix</span></span><br><span class="line">systemctl restart zabbix-agent</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Zabbix报警升级机制"><a href="#Zabbix报警升级机制" class="headerlink" title="Zabbix报警升级机制"></a>Zabbix报警升级机制</h1><p>场景一：在企业中，我们需要把报警设置为升级机制，当有些报警，运维人员没有及时处理的时候，或者没有时间，或者外出，或者陪产在医院，或者…总之身边没有电脑没有网络，在山沟子里的时候，必须有人站出来，解决这个问题。</p>
+<p>场景二：当zabbix报警服务器出现问题的时候，例如MySQL挂了，运维人员在厕…没有及时处理，那一分钟后这个警告肯定要升级，从警告变成严重故障之类的。<br>所以不管在哪种场景下，我们要有不同的报警人员，比如，一级报警，交给运维，没有及时处理就二级报警，交给运维总监或者运维经理，如果此时报警还没有人处理，那么报警就会升级到CTO或者CEO那里，那么这个时候，也是灾难降临之时，这也是一个很好的对运维人员必须要及时处理告警的一个制约。</p>
+<h2 id="步骤流程指示图-1"><a href="#步骤流程指示图-1" class="headerlink" title="步骤流程指示图"></a>步骤流程指示图</h2><p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101404535.png" alt="image-20230324101404535"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101408778.png" alt="image-20230324101408778"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101411636.png" alt="image-20230324101411636"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101414374.png" alt="image-20230324101414374"></p>
+<h2 id="添加用户"><a href="#添加用户" class="headerlink" title="添加用户"></a>添加用户</h2><p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101438249.png" alt="image-20230324101438249"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101442091.png" alt="image-20230324101442091"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101445712.png" alt="image-20230324101445712"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101448751.png" alt="image-20230324101448751"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101451498.png" alt="image-20230324101451498"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101454626.png" alt="image-20230324101454626"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230324101458246.png" alt="image-20230324101458246"></p>
+<h2 id="计算方式："><a href="#计算方式：" class="headerlink" title="计算方式："></a>计算方式：</h2><ol>
+<li><p>开始于 ，这个是相对一但触发监控，则立即发送消息</p>
+</li>
+<li><p>1-2步骤是给运维组发送消息，每隔5分钟发送一次，总共2个步骤，所以发送2次</p>
+</li>
+<li><p>3-4步骤是给运维经理组发送消息，每隔5分钟发送一次，总共2个步骤，所以发送2次</p>
+</li>
+<li><p>4-5步骤是给运维总监组发送消息，每隔5分钟发送一次，总共2个步骤，所以发送2次</p>
+</li>
+<li><p>每次的开始时间是如何计算的呢，第一个立即开始：</p>
+<p>1-2，3-4，4-5动作时间间隔是5分钟，所以在触发告警发送时间计算是5m+5m+5m=15m</p>
+</li>
+</ol>
+<h1 id="Zabbix自定义图形"><a href="#Zabbix自定义图形" class="headerlink" title="Zabbix自定义图形"></a>Zabbix自定义图形</h1><h2 id="创建图形"><a href="#创建图形" class="headerlink" title="创建图形"></a>创建图形</h2><p>介绍监控的顺序-&gt;应⽤级-&gt;监控项-&gt;基于监控项创建触发器-&gt;基于监控项创建图形</p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628224826930.png" alt="image-20230628224826930"></p>
+<h2 id="基于监控项进行绘图"><a href="#基于监控项进行绘图" class="headerlink" title="基于监控项进行绘图"></a>基于监控项进行绘图</h2><p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628224901113.png" alt="image-20230628224901113"></p>
+<h2 id="聚合图形"><a href="#聚合图形" class="headerlink" title="聚合图形"></a>聚合图形</h2><p>将多张图形整合为一张图形, 简称聚合图形 企业真实聚合图形，情况</p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628224956056.png" alt="image-20230628224956056"></p>
+<p>注意，在这里，聚合图形，我们可以分为以下几类，主要还是看公司的需求</p>
+<p>例如：</p>
+<ol>
+<li>按项目聚合（王者荣耀，LOL，天涯明月刀…）</li>
+<li>按主机聚合（每台主机的聚合…）</li>
+<li>按应用聚合（所有nginx的监控，所有MySQL的监控…）</li>
+</ol>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225020604.png" alt="image-20230628225020604"></p>
+<h3 id="幻灯片"><a href="#幻灯片" class="headerlink" title="幻灯片"></a>幻灯片</h3><p>多张聚合图形可以整合为幻灯⽚</p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225042087.png" alt="image-20230628225042087"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225056892.png" alt="image-20230628225056892"></p>
+<h2 id="自定义图形-扩展"><a href="#自定义图形-扩展" class="headerlink" title="自定义图形[扩展]"></a>自定义图形[扩展]</h2><h3 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装graphtree</span></span><br><span class="line"><span class="built_in">cd</span> /usr/share/zabbix</span><br><span class="line">wget https://raw.githubusercontent.com/OneOaaS/graphtrees/master/graphtree3.0.4.patch</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导⼊入补丁包</span></span><br><span class="line">yum install -y patch</span><br><span class="line">patch -Np0 &lt;graphtree3.0.4.patch </span><br><span class="line"><span class="built_in">chown</span> -R apache.apache oneoaas</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改Apache配置⽂文件</span></span><br><span class="line">vim /etc/httpd/conf.d/zabbix.conf </span><br><span class="line">Alias /oneoaas /usr/share/zabbix/oneoaas</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启httpd服务 </span></span><br><span class="line">systemctl restart httpd</span><br><span class="line"> </span><br><span class="line">单击-&gt;监测中-&gt;Graphtree</span><br><span class="line">单击对应的主机-&gt;选择需要查看的图形-&gt;点击查询-&gt;效果展示</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225154872.png" alt="image-20230628225154872"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225207367.png" alt="image-20230628225207367"></p>
+<p><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_sre/image-20230628225222861.png" alt="image-20230628225222861"></p>
+<h1 id="Zabbix⾃定义监控模板"><a href="#Zabbix⾃定义监控模板" class="headerlink" title="Zabbix⾃定义监控模板"></a>Zabbix⾃定义监控模板</h1><ol>
+<li>模板是⽀支持导⼊入与导出(模板⾥里里⾯面的监控项是有脚本⽀支撑，所以脚本需⼀一起打包)</li>
+<li>conf⽂文件主要⽤用于定义监控项，监控项⽤用来调⽤用脚本或命令，获取监控值。</li>
+<li>如果希望将之前定义的监控项做成模板，找到监控项-&gt;全选-&gt;复制</li>
+<li>自定义使⽤用模板(让监控项可以重复使⽤用)</li>
+<li>客户端agent必须要定义监控项，监控项取值需要使⽤用到脚本⽂文件或系统命令</li>
+<li>服务端导⼊入模板</li>
+<li>创建监控主机，链接新导⼊入模板，如果是已存在的监控主机，增加我们刚导⼊入的模板</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ChenlinBB.github.io">Chenlin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://chenlinbb.github.io/archives/6e4f08aa.html">https://chenlinbb.github.io/archives/6e4f08aa.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ChenlinBB.github.io" target="_blank">奥利奥の麦旋风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/">自动化运维</a><a class="post-meta__tags" href="/tags/%E5%BA%94%E7%94%A8%E7%9B%91%E6%8E%A7/">应用监控</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/">数据分析</a><a class="post-meta__tags" href="/tags/Zabbix/">Zabbix</a></div><div class="post_share"><div class="social-share" data-image="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/7317074E-A60B-4221-A662-C722A4F3A816_1_201_a.jpeg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/37F430BB-D585-4B39-97DF-65ADB8738735_1_201_a.jpeg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/904af0f9.html" title="4.Zabbix触发器动作和邮件告警"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">4.Zabbix触发器动作和邮件告警</div></div></a></div><div class="next-post pull-right"><a href="/archives/dc78c639.html" title="6.Zabbix深入应用监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">6.Zabbix深入应用监控</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/archives/904af0f9.html" title="4.Zabbix触发器动作和邮件告警"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">4.Zabbix触发器动作和邮件告警</div></div></a></div><div><a href="/archives/5b4cb8aa.html" title="1.Zabbix入门"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">1.Zabbix入门</div></div></a></div><div><a href="/archives/d8ae290c.html" title="2.Zabbix安装、汉化及监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">2.Zabbix安装、汉化及监控</div></div></a></div><div><a href="/archives/c184cabb.html" title="3.Zabbix自定义监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">3.Zabbix自定义监控</div></div></a></div><div><a href="/archives/b58bb029.html" title="8.Zabbix监控系统：分布式监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">8.Zabbix监控系统：分布式监控</div></div></a></div><div><a href="/archives/27dc03fd.html" title="7.Zabbix监控系统：自动化监控"><img class="cover" src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine5.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="fas fa-history fa-fw"></i> 2024-07-18</div><div class="title">7.Zabbix监控系统：自动化监控</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E7%B4%A0%E6%9D%90%E5%9B%BE/touxiang.JPG" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Chenlin</div><div class="author-info__description">青山不改，绿水长流</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">153</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">98</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><a id="card-info-btn" href="/img/WeChat.jpg"><i></i><span>联系站长</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:chenlin.h@foxmail.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/WeChat.JPG" target="_blank" title="WeChat"><i class="fab fa-weixin" style="color: #4a7dbe;"></i></a><a class="social-icon" href="/img/QQ.jpg" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎大家一起学习交流，如遇到想学习的内容或发现文章错误请点击上方"联系站长"告知更新，谢谢！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Zabbix%E8%87%AA%E6%84%88%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">Zabbix自愈模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E6%B5%81%E7%A8%8B%E6%8C%87%E7%A4%BA%E5%9B%BE"><span class="toc-number">1.1.</span> <span class="toc-text">步骤流程指示图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sudo%E6%8F%90%E6%9D%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.</span> <span class="toc-text">sudo提权配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zabbix%E5%BC%80%E5%90%AF%E8%BF%9C%E7%A8%8B%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.</span> <span class="toc-text">zabbix开启远程执行命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zabbix%E6%8A%A5%E8%AD%A6%E5%8D%87%E7%BA%A7%E6%9C%BA%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">Zabbix报警升级机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E6%B5%81%E7%A8%8B%E6%8C%87%E7%A4%BA%E5%9B%BE-1"><span class="toc-number">2.1.</span> <span class="toc-text">步骤流程指示图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="toc-number">2.2.</span> <span class="toc-text">添加用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="toc-number">2.3.</span> <span class="toc-text">计算方式：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zabbix%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%BE%E5%BD%A2"><span class="toc-number">3.</span> <span class="toc-text">Zabbix自定义图形</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%9B%BE%E5%BD%A2"><span class="toc-number">3.1.</span> <span class="toc-text">创建图形</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E7%9B%91%E6%8E%A7%E9%A1%B9%E8%BF%9B%E8%A1%8C%E7%BB%98%E5%9B%BE"><span class="toc-number">3.2.</span> <span class="toc-text">基于监控项进行绘图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%81%9A%E5%90%88%E5%9B%BE%E5%BD%A2"><span class="toc-number">3.3.</span> <span class="toc-text">聚合图形</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%BB%E7%81%AF%E7%89%87"><span class="toc-number">3.3.1.</span> <span class="toc-text">幻灯片</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%BE%E5%BD%A2-%E6%89%A9%E5%B1%95"><span class="toc-number">3.4.</span> <span class="toc-text">自定义图形[扩展]</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE"><span class="toc-number">3.4.1.</span> <span class="toc-text">安装和配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Zabbix%E2%BE%83%E5%AE%9A%E4%B9%89%E7%9B%91%E6%8E%A7%E6%A8%A1%E6%9D%BF"><span class="toc-number">4.</span> <span class="toc-text">Zabbix⾃定义监控模板</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/31b0d93.html" title="1.Shell编程-基础"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1.Shell编程-基础"/></a><div class="content"><a class="title" href="/archives/31b0d93.html" title="1.Shell编程-基础">1.Shell编程-基础</a><time datetime="2024-07-17T15:58:40.340Z" title="发表于 2024-07-17 23:58:40">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="9.Kibana深入-日志图形展示"/></a><div class="content"><a class="title" href="/archives/5e178ae3.html" title="9.Kibana深入-日志图形展示">9.Kibana深入-日志图形展示</a><time datetime="2024-07-17T15:51:58.162Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/550b6709.html" title="8.Filebeat深入收集日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="8.Filebeat深入收集日志"/></a><div class="content"><a class="title" href="/archives/550b6709.html" title="8.Filebeat深入收集日志">8.Filebeat深入收集日志</a><time datetime="2024-07-17T15:51:58.160Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="7.Logstash结合Redis搭建集群"/></a><div class="content"><a class="title" href="/archives/e18db17f.html" title="7.Logstash结合Redis搭建集群">7.Logstash结合Redis搭建集群</a><time datetime="2024-07-17T15:51:58.159Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志"><img src="https://bkup-ast.oss-cn-shanghai.aliyuncs.com/img_blog/%E5%A3%81%E7%BA%B8%E7%B4%A0%E6%9D%90/WallpaperEngine12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="6.Logstash深入收集多类型日志"/></a><div class="content"><a class="title" href="/archives/4fcc462d.html" title="6.Logstash深入收集多类型日志">6.Logstash深入收集多类型日志</a><time datetime="2024-07-17T15:51:58.158Z" title="发表于 2024-07-17 23:51:58">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2024 By Chenlin</div><div class="footer_custom_text">I wish you to become your own sun, no need to rely on who's light.<p><a target="_blank" href="https://hexo.io/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ " rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="30" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body></html>
